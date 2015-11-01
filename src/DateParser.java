@@ -12,6 +12,7 @@ import java.util.Map;
 public class DateParser {
     private String dateString;
     private String dateFormat;
+    private Timestamp timestamp;
 
     /**
      * Get the milliseconds since the epoch
@@ -23,10 +24,28 @@ public class DateParser {
         return millis;
     }
 
-    public DateParser(String dateString) {
+    public DateParser(String dateString) throws ParseException {
         this.dateString = dateString;
+        this.timestamp = parseStringToTimestamp(dateString);
     }
 
+    public DateParser() {
+    }
+
+    public Date getDate(String s) throws ParseException {
+        Date parsedDate = null;
+        DateFormat dateFormat = null;
+        if (!s.isEmpty()) {
+            dateFormat = new SimpleDateFormat(determineDateFormat(s));
+        } else if (!dateString.isEmpty()) {
+            dateFormat = new SimpleDateFormat(determineDateFormat(dateString));
+
+        }
+        if (dateFormat != null) {
+            parsedDate = dateFormat.parse(s);
+        }
+        return parsedDate;
+    }
     /**
      *  This allows you to add custom formats to the map
      * @param regex a regex String
@@ -79,6 +98,8 @@ public class DateParser {
         DateFormat dateFormat = null;
         if(!s.isEmpty()) {
             dateFormat = new SimpleDateFormat(determineDateFormat(s));
+        } else if (!dateString.isEmpty()) {
+            dateFormat = new SimpleDateFormat(determineDateFormat(dateString));
         }
         if(dateFormat != null){
             parsedDate = dateFormat.parse(s);
