@@ -3,12 +3,16 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
  * Created by Zane on 10/31/2015.
+ * TODO: cite http://stackoverflow.com/a/3390252/897059 - the original source of the hashmap
+ * TODO: if extracted month > 12 for any of the lookups then throw an exception that the application needs to consider british/european and swap the two over
+ *       (but if we're not parsing the dates, and instead using them for record linkage, and all dates are passed in - then we can ignore this and just treat it as datepart1, datepart2, and datepart3 - i.e., if two records get converted to 1st of the 13th month, then they will match, regardless of the date being wrong)
  */
+ 
 public class DateParser {
     private String dateString;
     private String dateFormat;
@@ -55,7 +59,7 @@ public class DateParser {
         this.DATE_FORMAT_REGEXPS.put(regex,dateFormatString);
     }
 
-    private Map<String, String> DATE_FORMAT_REGEXPS = new HashMap<String, String>() {{
+    private LinkedHashMap<String, String> DATE_FORMAT_REGEXPS = new LinkedHashMap<String, String>() {{
         put("^\\d{1,2}:\\d{1,2}\\s(am|pm)\\s[a-z]{3},\\s(mon|tue|wed|thu|fri|sat|sun)\\s(january|february|march|april|may|june|july|august|september|october|november|december)\\s\\d{1,2},\\s\\d{4}$", "hh:mm a z, E MMMM dd, yyyy");
         put("^\\d{8}$", "yyyyMMdd");
         put("^(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec).\\s\\d{1,2},\\s\\d{4}\\s\\d{1,2}:\\d{2}\\s(am|pm)\\s[a-z]{3}$","MMM. dd, yyyy hh:mm a z");
@@ -84,6 +88,7 @@ public class DateParser {
         put("^\\d{4}/\\d{1,2}/\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}$", "yyyy/MM/dd HH:mm:ss");
         put("^\\d{1,2}\\s[a-z]{3}\\s\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}$", "dd MMM yyyy HH:mm:ss");
         put("^\\d{1,2}\\s[a-z]{4,}\\s\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}$", "dd MMMM yyyy HH:mm:ss");
+        put("(\\d{4})", "yyyy");
     }};
 
     /**
@@ -91,6 +96,14 @@ public class DateParser {
      * @param s String to attempt to parse
      * @return java.sql.timestamp if successfull else null
      * @throws ParseException
+     */
+     
+     /*
+     TODO: 
+     use java 8's date fn's e.g.,
+     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM d, yyyy", Locale.ENGLISH);
+    LocalDate date = LocalDate.parse(str, formatter);
+
      */
     public Timestamp parseStringToTimestamp(String s) throws ParseException {
         Timestamp t = null;
