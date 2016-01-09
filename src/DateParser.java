@@ -9,6 +9,7 @@ import java.util.Map;
 /**
  * Created by Zane on 10/31/2015.
  * TODO: cite http://stackoverflow.com/a/3390252/897059 - the original source of the hashmap
+ * TODO: cite http://natty.joestelmach.com/try.jsp#
  * TODO: if extracted month > 12 for any of the lookups then throw an exception that the application needs to consider british/european and swap the two over
  *       (but if we're not parsing the dates, and instead using them for record linkage, and all dates are passed in - then we can ignore this and just treat it as datepart1, datepart2, and datepart3 - i.e., if two records get converted to 1st of the 13th month, then they will match, regardless of the date being wrong)
  */
